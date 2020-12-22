@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "pkief.material-icon-theme",
+    "johnpapa.angular2",
+    "angular.ng-template"
+  ]
+}
