@@ -8,7 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "quality-check": "ng lint && ng test --no-watch --no-progress --code-coverage --browsers=ChromeHeadlessCI"
+    "quality-check": "ng lint && ng test --no-watch --no-progress --code-coverage --browsers=ChromeHeadlessCI",
+    "start:vm": "ng serve --host 0.0.0.0"
   },
   "private": true,
   "dependencies": {
