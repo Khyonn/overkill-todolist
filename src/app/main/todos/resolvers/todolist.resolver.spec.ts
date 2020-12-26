@@ -3,7 +3,7 @@ import { MockStore, provideMockStore } from '@ngrx/store/testing';
 
 import { AppState } from '@todos/store/reducer';
 import { TodolistResolver } from '@todos/resolvers/todolist.resolver';
-import { Todo } from '@shared/business/model/Todo';
+import { Todo } from '@shared/business-domain/model/Todo';
 
 describe('TodolistResolver', () => {
   let resolver: TodolistResolver;

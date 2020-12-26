@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { Todo } from '@shared/business/model/Todo';
-import { TodoState } from '@shared/business/model/TodoState';
+import { Todo } from '@shared/business-domain/model/Todo';
+import { TodoState } from '@shared/business-domain/model/TodoState';
 
 import { MaterialModule } from '@shared/modules/material/material.module';
 
