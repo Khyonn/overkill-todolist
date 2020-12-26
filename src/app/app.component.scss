@@ -1,0 +1,19 @@
+:host {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.toolbar-link {
+  text-decoration: none;
+  color: #fff;
+}
+mat-toolbar {
+  flex-shrink: 0;
+}
+main {
+  flex-grow: 1;
+  overflow: auto;
+  router-outlet + ::ng-deep * {
+    min-height: 100%;
+  }
+}

@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+app-todo-list {
+  width: 100%;
+}
+
+@media (min-width: 501px) {
+  app-todo-list {
+    margin: 1em 0;
+    width: 500px;
+  }
+}
