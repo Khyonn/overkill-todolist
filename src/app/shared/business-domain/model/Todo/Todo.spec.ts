@@ -36,4 +36,14 @@ describe('Test class Todo', () => {
     expect(todo.title).toBe('Laundry');
     expect(todo.state).toBe('DONE');
   });
+
+  describe('isDone()', () => {
+    it('should not be done', () => {
+      expect(Todo.isDone(new Todo('Washing dishes', TodoState.TODO))).toBeFalse();
+    });
+
+    it('should be done', () => {
+      expect(Todo.isDone(new Todo('Washing dishes', TodoState.DONE))).toBeTrue();
+    });
+  });
 });

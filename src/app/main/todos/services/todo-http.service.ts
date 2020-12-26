@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Todo } from '@shared/business/model/Todo';
-import { Observable } from 'rxjs';
+import { Todo } from '@shared/business-domain/model/Todo';
+import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class TodoHttpService {
@@ -9,5 +9,9 @@ export class TodoHttpService {
 
   getTodos(): Observable<Todo[]> {
     return this.http.get<Todo[]>('assets/mocks/todos.json');
+  }
+
+  updateTodo(todo: Todo): Observable<Todo> {
+    return of({ ...todo });
   }
 }

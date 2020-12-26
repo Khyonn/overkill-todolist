@@ -8,9 +8,16 @@ import { provideMockActions } from '@ngrx/effects/testing';
 
 import { TodoHttpService } from '@todos/services/todo-http.service';
 import { TodoListEffects } from '@todos/store/todolist/effects';
-import { dataLoaded, loadingFailed, startLoading } from '@todos/store/todolist/actions';
-import { Todo } from '@shared/business/model/Todo';
-import { TodoState } from '@shared/business/model/TodoState';
+import {
+  listDataLoaded,
+  listLoadingFailed,
+  startLoadingList,
+  startUpdateTodoState,
+  todoStateUpdated,
+  todoStateUpdateFailed,
+} from '@todos/store/todolist/actions';
+import { Todo } from '@shared/business-domain/model/Todo';
+import { TodoState } from '@shared/business-domain/model/TodoState';
 import { getTestScheduler } from '@testing/observable';
 
 describe('TodoListEffects', () => {
@@ -25,7 +32,7 @@ describe('TodoListEffects', () => {
       providers: [
         TodoListEffects,
         provideMockActions(() => actions$),
-        { provide: TodoHttpService, useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos']) },
+        { provide: TodoHttpService, useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos', 'updateTodo']) },
       ],
     });
 
@@ -39,14 +46,14 @@ describe('TodoListEffects', () => {
   });
 
   describe('setTodoList$', () => {
-    it('Should map startLoading to dataLoadedAction', () => {
+    it('Should map startLoadingList to listDataLoaded', () => {
       const todos = [
         new Todo('Laundry', TodoState.TODO, 1),
         new Todo('Feed the cat', TodoState.TODO, 2),
         new Todo('Do the dishes', TodoState.TODO, 3),
       ];
-      const inputAction = startLoading();
-      const outputAction = dataLoaded({ todos });
+      const inputAction = startLoadingList();
+      const outputAction = listDataLoaded({ todos });
 
       testScheduler.run(({ cold, hot, expectObservable }) => {
         actions$ = hot('-a', { a: inputAction });
@@ -57,9 +64,9 @@ describe('TodoListEffects', () => {
       });
     });
 
-    it('Should map startLoading to loadingFailed', () => {
-      const inputAction = startLoading();
-      const outputAction = loadingFailed();
+    it('Should map startLoadingList to listLoadingFailed', () => {
+      const inputAction = startLoadingList();
+      const outputAction = listLoadingFailed();
 
       testScheduler.run(({ cold, hot, expectObservable }) => {
         actions$ = hot('-a', { a: inputAction });
@@ -67,6 +74,54 @@ describe('TodoListEffects', () => {
 
         todoHttpService.getTodos.and.returnValue(result$);
         expectObservable(todoListEffects.setTodoList$).toBe('--b', { b: outputAction });
+      });
+    });
+  });
+
+  describe('updateTodo$', () => {
+    it('Should map startUpdateTodoState to todoStateUpdated', () => {
+      const todoToUpdate = new Todo('Laundry', TodoState.TODO, 1);
+      const inputAction = startUpdateTodoState({ todoToUpdate, isDone: true });
+
+      const updatedTodo = new Todo('Laundry', TodoState.DONE, 1);
+      const outputAction = todoStateUpdated({ updatedTodo });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold('-b|', { b: updatedTodo });
+
+        todoHttpService.updateTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.updateTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+
+    it('Should map startUpdateTodoState to todoStateUpdated', () => {
+      const todoToUpdate = new Todo('Laundry', TodoState.DONE, 1);
+      const inputAction = startUpdateTodoState({ todoToUpdate, isDone: false });
+
+      const updatedTodo = new Todo('Laundry', TodoState.TODO, 1);
+      const outputAction = todoStateUpdated({ updatedTodo });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold('-b|', { b: updatedTodo });
+
+        todoHttpService.updateTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.updateTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+
+    it('Should map startUpdateTodoState to todoStateUpdateFailed', () => {
+      const todoToUpdate = new Todo('Laundry', TodoState.TODO, 1);
+      const inputAction = startUpdateTodoState({ todoToUpdate, isDone: true });
+      const outputAction = todoStateUpdateFailed();
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold<Todo>('-#|');
+
+        todoHttpService.updateTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.updateTodo$).toBe('--b', { b: outputAction });
       });
     });
   });
