@@ -4,7 +4,7 @@ import { Todo, DescribedTodo } from '@shared/business-domain/model/Todo';
 import { Observable, of } from 'rxjs';
 import { tap, throwIfEmpty } from 'rxjs/operators';
 
-const mockBackEnd = new Map<number, Todo>();
+export const mockBackEnd = new Map<number, Todo>();
 
 @Injectable()
 export class TodoHttpService {
@@ -24,5 +24,10 @@ export class TodoHttpService {
 
   updateTodo(todo: Todo): Observable<Todo> {
     return of(mockBackEnd.set(todo.id, { ...todo }).get(todo.id));
+  }
+
+  createTodo(todo: DescribedTodo): Observable<DescribedTodo> {
+    const id = Math.max(0, ...mockBackEnd.keys()) + 1;
+    return of(mockBackEnd.set(id, { ...todo, id }).get(id));
   }
 }

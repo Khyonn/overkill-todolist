@@ -43,3 +43,9 @@
 ## Technical
 
 - Change store shape : using @ngrx/entities to manage list
+
+# [004] - Create a new todo
+
+## Business
+
+- Allow user to create a new todo (via Dialog)
