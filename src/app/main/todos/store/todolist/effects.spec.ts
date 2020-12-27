@@ -9,17 +9,20 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { TodoHttpService } from '@todos/services/todo-http.service';
 import { TodoListEffects } from '@todos/store/todolist/effects';
 import {
+  createTodo,
   listDataLoaded,
   listLoadingFailed,
   startLoadingList,
   startLoadingTodo,
   startUpdateTodoState,
+  todoCreated,
+  todoCreationFailed,
   todoLoaded,
   todoLoadingFailed,
   todoStateUpdated,
   todoStateUpdateFailed,
 } from '@todos/store/todolist/actions';
-import { Todo } from '@shared/business-domain/model/Todo';
+import { DescribedTodo, Todo } from '@shared/business-domain/model/Todo';
 import { TodoState } from '@shared/business-domain/model/TodoState';
 import { getTestScheduler } from '@testing/observable';
 
@@ -37,7 +40,7 @@ describe('TodoListEffects', () => {
         provideMockActions(() => actions$),
         {
           provide: TodoHttpService,
-          useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos', 'updateTodo', 'getTodo']),
+          useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos', 'updateTodo', 'getTodo', 'createTodo']),
         },
       ],
     });
@@ -157,6 +160,46 @@ describe('TodoListEffects', () => {
 
         todoHttpService.getTodo.and.returnValue(result$);
         expectObservable(todoListEffects.loadTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+  });
+
+  describe('createTodo$', () => {
+    it('Should map createTodo to todoCreated', () => {
+      const todoToCreate = Object.assign(new DescribedTodo(), {
+        title: 'Laundry',
+        description: 'Because someone need to wash his clothes',
+      }) as DescribedTodo;
+      const createdTodo = Object.assign(new DescribedTodo(), todoToCreate, {
+        id: 1,
+      }) as DescribedTodo;
+
+      const inputAction = createTodo({ todoToCreate });
+      const outputAction = todoCreated({ createdTodo });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold('-b|', { b: createdTodo });
+
+        todoHttpService.createTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.createTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+
+    it('Should map createTodo to todoCreationFailed', () => {
+      const todoToCreate = Object.assign(new DescribedTodo(), {
+        title: 'Laundry',
+        description: 'Because someone need to wash his clothes',
+      }) as DescribedTodo;
+      const inputAction = createTodo({ todoToCreate });
+      const outputAction = todoCreationFailed({ error: 'Failed to create todo' });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold<Todo>('-#|');
+
+        todoHttpService.createTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.createTodo$).toBe('--b', { b: outputAction });
       });
     });
   });

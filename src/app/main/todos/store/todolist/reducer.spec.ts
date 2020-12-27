@@ -1,11 +1,14 @@
 import { Action } from '@ngrx/store';
-import { Todo } from '@shared/business-domain/model/Todo';
+import { DescribedTodo, Todo } from '@shared/business-domain/model/Todo';
 import { TodoState } from '@shared/business-domain/model/TodoState';
 import {
+  createTodo,
   listDataLoaded,
   listLoadingFailed,
   startLoadingList,
   startUpdateTodoState,
+  todoCreated,
+  todoCreationFailed,
   todoStateUpdated,
   todoStateUpdateFailed,
 } from './actions';
@@ -95,6 +98,32 @@ describe('todoListReducer', () => {
     it('should not edit the state', () => {
       dispatch(todoStateUpdateFailed({ error: 'oops' }));
       expect(state.error).toBe('oops');
+    });
+  });
+
+  describe('createTodo', () => {
+    it('should set is loading', () => {
+      dispatch(createTodo({ todoToCreate: null }));
+      expect(state.isLoading).toBe(true);
+    });
+  });
+
+  describe('createTodo', () => {
+    it('should not add an error to the state', () => {
+      dispatch(todoCreationFailed({ error: 'oops' }));
+      expect(state.error).toBe('oops');
+      expect(state.isLoading).toBe(false);
+    });
+  });
+
+  describe('createTodo', () => {
+    it('should not add an error to the state', () => {
+      state = { entities: {}, ids: [] };
+      const createdTodo = new DescribedTodo('Laundry', TodoState.TODO, 1, 'Need to wash clothes');
+      dispatch(todoCreated({ createdTodo }));
+      expect(state.entities[1]).toBe(createdTodo);
+      expect(state.isLoading).toBe(false);
+      expect(state.ids[0]).toBe(1);
     });
   });
 });

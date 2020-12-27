@@ -1,0 +1,18 @@
+<form (ngSubmit)="form.valid && onSubmit()" [formGroup]="form">
+  <h1 mat-dialog-title>Add a new todo</h1>
+  <div mat-dialog-content class="form-fields">
+    <mat-form-field>
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error *ngIf="form.get('title').invalid">The title is required</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description"></textarea>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions class="actions">
+    <button type="button" mat-button (click)="onClickCancel()">Cancel</button>
+    <button type="submit" mat-raised-button color="primary">Add</button>
+  </div>
+</form>

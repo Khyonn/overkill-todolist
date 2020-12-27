@@ -13,6 +13,9 @@ import {
   startUpdateTodoState,
   todoStateUpdated,
   todoStateUpdateFailed,
+  createTodo,
+  todoCreated,
+  todoCreationFailed,
 } from './actions';
 import { TodoState } from '@shared/business-domain/model/TodoState';
 
@@ -51,6 +54,18 @@ export class TodoListEffects {
         return this.todoService.getTodo(todoId).pipe(
           map((todo) => todoLoaded({ todo })),
           catchError(() => of(todoLoadingFailed({ error: 'Failed to retrieve todo' })))
+        );
+      })
+    )
+  );
+
+  createTodo$ = createEffect(() =>
+    this.action$.pipe(
+      ofType(createTodo),
+      mergeMap(({ todoToCreate }) => {
+        return this.todoService.createTodo(todoToCreate).pipe(
+          map((createdTodo) => todoCreated({ createdTodo })),
+          catchError(() => of(todoCreationFailed({ error: 'Failed to create todo' })))
         );
       })
     )

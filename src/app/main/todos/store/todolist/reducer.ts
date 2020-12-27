@@ -7,11 +7,14 @@ import {
   startUpdateTodoState,
   todoStateUpdated,
   todoStateUpdateFailed,
+  createTodo,
+  todoCreationFailed,
+  todoCreated,
 } from './actions';
 import { State, initialState, featureAdapter } from './state';
 
 const setIsLoading = (state: State): State => ({ ...state, isLoading: true });
-const setError = (state: State, { error }: { error: string }): State => ({ ...state, error });
+const setError = (state: State, { error }: { error: string }): State => ({ ...state, error, isLoading: false });
 const setNoLoadingOrError = (state: State): State => ({ ...state, isLoading: false, error: null });
 
 export const todoListReducer = createReducer(
@@ -40,5 +43,8 @@ export const todoListReducer = createReducer(
       },
     };
   }),
-  on(todoStateUpdateFailed, setError)
+  on(todoStateUpdateFailed, setError),
+  on(createTodo, setIsLoading),
+  on(todoCreated, (state, { createdTodo }) => featureAdapter.addOne(createdTodo, setNoLoadingOrError(state))),
+  on(todoCreationFailed, setError)
 );

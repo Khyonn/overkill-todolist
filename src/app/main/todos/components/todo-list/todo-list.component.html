@@ -1,6 +1,11 @@
-<mat-card *ngIf="todos?.length">
-  <mat-card-title>Todo list</mat-card-title>
-  <mat-card-content>
+<mat-card>
+  <mat-card-title
+    >Todo list
+    <button class="add-todo-button" mat-mini-fab color="primary" (click)="onClickAdd()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-card-title>
+  <mat-card-content *ngIf="todos?.length">
     <mat-list>
       <mat-list-item *ngFor="let todo of todos">
         <app-todo-item [attr.id]="'todo_' + todo.id" [todo]="todo"></app-todo-item>

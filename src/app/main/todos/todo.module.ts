@@ -17,9 +17,10 @@ import { TodoDetailComponent } from './components/todo-detail/todo-detail.compon
 import { TodolistResolver } from './resolvers/todolist.resolver';
 import { TodoResolver } from './resolvers/todo.resolver';
 import { TodoHttpService } from './services/todo-http.service';
+import { AddTodoModalComponent } from './components/add-todo-modal/add-todo-modal.component';
 
 @NgModule({
-  declarations: [TodoPageComponent, TodoDetailPageComponent, TodoListComponent, TodoItemComponent, TodoDetailComponent],
+  declarations: [TodoPageComponent, TodoDetailPageComponent, TodoListComponent, TodoItemComponent, TodoDetailComponent, AddTodoModalComponent],
   imports: [
     CommonModule,
     TodoRoutingModule,
