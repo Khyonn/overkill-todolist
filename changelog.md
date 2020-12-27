@@ -33,3 +33,13 @@
 - Renaming of todolist store actions
 - Renaming business folder to business-domain
 - Adding business rules for todos
+
+# [003] - Detail a todo
+
+## Business
+
+- Allow user to see details of a todo
+
+## Technical
+
+- Change store shape : using @ngrx/entities to manage list
