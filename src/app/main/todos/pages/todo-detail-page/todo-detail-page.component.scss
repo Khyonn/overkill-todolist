@@ -1,0 +1,9 @@
+:host {
+  height: 100%;
+}
+app-todo-detail {
+  display: flex;
+  padding: 1em;
+  min-height: 100%;
+  box-sizing: border-box;
+}

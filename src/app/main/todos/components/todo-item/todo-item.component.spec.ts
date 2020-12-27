@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Store } from '@ngrx/store';
 
 import { Todo } from '@shared/business-domain/model/Todo';
@@ -16,7 +17,7 @@ describe('TodoItemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TodoItemComponent],
-      imports: [MaterialModule],
+      imports: [MaterialModule, RouterTestingModule.withRoutes([])],
       providers: [{ provide: Store, useValue: jasmine.createSpyObj('Store', ['dispatch']) }],
     }).compileComponents();
     store = TestBed.inject(Store) as jasmine.SpyObj<Store>;

@@ -1,9 +1,2 @@
-import { TodoState } from '../TodoState';
-
-export class Todo {
-  constructor(public title = '', public state = TodoState.TODO, public id?: number) {}
-
-  static isDone(todo: Todo): boolean {
-    return !!todo && todo.state === TodoState.DONE;
-  }
-}
+export { Todo } from '@shared/business-domain/model/Todo/Todo';
+export { DescribedTodo } from '@shared/business-domain/model/Todo/DescribedTodo';

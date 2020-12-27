@@ -2,11 +2,14 @@ import { Injectable } from '@angular/core';
 import { TodoHttpService } from '@todos/services/todo-http.service';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap } from 'rxjs/operators';
 import {
   listDataLoaded,
   listLoadingFailed,
   startLoadingList,
+  startLoadingTodo,
+  todoLoaded,
+  todoLoadingFailed,
   startUpdateTodoState,
   todoStateUpdated,
   todoStateUpdateFailed,
@@ -21,7 +24,7 @@ export class TodoListEffects {
       mergeMap(() =>
         this.todoService.getTodos().pipe(
           map((todos) => listDataLoaded({ todos })),
-          catchError(() => of(listLoadingFailed()))
+          catchError(() => of(listLoadingFailed({ error: 'Failed to load todos' })))
         )
       )
     )
@@ -30,12 +33,26 @@ export class TodoListEffects {
   updateTodo$ = createEffect(() =>
     this.action$.pipe(
       ofType(startUpdateTodoState),
-      mergeMap(({ todoToUpdate, isDone }) =>
-        this.todoService.updateTodo({ ...todoToUpdate, state: isDone ? TodoState.DONE : TodoState.TODO }).pipe(
+      mergeMap(({ todoToUpdate, isDone }) => {
+        const todo = { ...todoToUpdate, state: isDone ? TodoState.DONE : TodoState.TODO };
+
+        return this.todoService.updateTodo(todo).pipe(
           map((updatedTodo) => todoStateUpdated({ updatedTodo })),
-          catchError(() => of(todoStateUpdateFailed()))
-        )
-      )
+          catchError(() => of(todoStateUpdateFailed({ error: 'Failed to update todo' })))
+        );
+      })
+    )
+  );
+
+  loadTodo$ = createEffect(() =>
+    this.action$.pipe(
+      ofType(startLoadingTodo),
+      mergeMap(({ todoId }) => {
+        return this.todoService.getTodo(todoId).pipe(
+          map((todo) => todoLoaded({ todo })),
+          catchError(() => of(todoLoadingFailed({ error: 'Failed to retrieve todo' })))
+        );
+      })
     )
   );
 

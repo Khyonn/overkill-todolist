@@ -1,3 +1,24 @@
-.crossed-out {
-  text-decoration: line-through;
+:host {
+  display: flex;
+  width: 100%;
+}
+
+.todo-title {
+  display: inline-block;
+
+  padding: 0 0.5em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  vertical-align: middle; // to correct `overflow: hidden` alignment problem
+
+  &.crossed-out {
+    text-decoration: line-through;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }

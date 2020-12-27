@@ -1,17 +1,28 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Todo } from '@shared/business-domain/model/Todo';
+import { Todo, DescribedTodo } from '@shared/business-domain/model/Todo';
 import { Observable, of } from 'rxjs';
+import { tap, throwIfEmpty } from 'rxjs/operators';
+
+const mockBackEnd = new Map<number, Todo>();
 
 @Injectable()
 export class TodoHttpService {
   constructor(private http: HttpClient) {}
 
   getTodos(): Observable<Todo[]> {
-    return this.http.get<Todo[]>('assets/mocks/todos.json');
+    return this.http.get<Todo[]>('assets/mocks/todos.json').pipe(
+      tap((todos) => {
+        todos.forEach((todo) => mockBackEnd.set(todo.id, { ...todo }));
+      })
+    );
+  }
+
+  getTodo(id: number): Observable<DescribedTodo> {
+    return of(mockBackEnd.get(id)).pipe(throwIfEmpty());
   }
 
   updateTodo(todo: Todo): Observable<Todo> {
-    return of({ ...todo });
+    return of(mockBackEnd.set(todo.id, { ...todo }).get(todo.id));
   }
 }
