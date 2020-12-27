@@ -1,5 +1,6 @@
 <ng-container *ngIf="todo">
-  <mat-checkbox [checked]="isDone" (change)="onChangeState($event.checked)">
-    <span class="todo-title" [ngClass]="{ 'crossed-out': isDone }">{{ todo.title }}</span>
-  </mat-checkbox>
+  <mat-checkbox [checked]="isDone" (change)="onChangeState($event.checked)"> </mat-checkbox>
+  <a [routerLink]="[todo.id]" class="todo-title" [ngClass]="{ 'crossed-out': isDone }">{{
+    todo.title
+  }}</a>
 </ng-container>

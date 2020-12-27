@@ -12,7 +12,10 @@ import {
   listDataLoaded,
   listLoadingFailed,
   startLoadingList,
+  startLoadingTodo,
   startUpdateTodoState,
+  todoLoaded,
+  todoLoadingFailed,
   todoStateUpdated,
   todoStateUpdateFailed,
 } from '@todos/store/todolist/actions';
@@ -32,7 +35,10 @@ describe('TodoListEffects', () => {
       providers: [
         TodoListEffects,
         provideMockActions(() => actions$),
-        { provide: TodoHttpService, useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos', 'updateTodo']) },
+        {
+          provide: TodoHttpService,
+          useValue: jasmine.createSpyObj('TodoHttpService', ['getTodos', 'updateTodo', 'getTodo']),
+        },
       ],
     });
 
@@ -66,7 +72,7 @@ describe('TodoListEffects', () => {
 
     it('Should map startLoadingList to listLoadingFailed', () => {
       const inputAction = startLoadingList();
-      const outputAction = listLoadingFailed();
+      const outputAction = listLoadingFailed({ error: 'Failed to load todos' });
 
       testScheduler.run(({ cold, hot, expectObservable }) => {
         actions$ = hot('-a', { a: inputAction });
@@ -114,7 +120,7 @@ describe('TodoListEffects', () => {
     it('Should map startUpdateTodoState to todoStateUpdateFailed', () => {
       const todoToUpdate = new Todo('Laundry', TodoState.TODO, 1);
       const inputAction = startUpdateTodoState({ todoToUpdate, isDone: true });
-      const outputAction = todoStateUpdateFailed();
+      const outputAction = todoStateUpdateFailed({ error: 'Failed to update todo' });
 
       testScheduler.run(({ cold, hot, expectObservable }) => {
         actions$ = hot('-a', { a: inputAction });
@@ -122,6 +128,35 @@ describe('TodoListEffects', () => {
 
         todoHttpService.updateTodo.and.returnValue(result$);
         expectObservable(todoListEffects.updateTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+  });
+
+  describe('loadTodo$', () => {
+    it('Should map startLoadingTodo to todoLoaded', () => {
+      const todo = new Todo('Laundry', TodoState.TODO, 1);
+      const inputAction = startLoadingTodo({ todoId: 1 });
+      const outputAction = todoLoaded({ todo });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold('-b|', { b: todo });
+
+        todoHttpService.getTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.loadTodo$).toBe('--b', { b: outputAction });
+      });
+    });
+
+    it('Should map startLoadingTodo to todoLoadingFailed', () => {
+      const inputAction = startLoadingTodo({ todoId: 1 });
+      const outputAction = todoLoadingFailed({ error: 'Failed to retrieve todo' });
+
+      testScheduler.run(({ cold, hot, expectObservable }) => {
+        actions$ = hot('-a', { a: inputAction });
+        const result$ = cold<Todo>('-#|');
+
+        todoHttpService.getTodo.and.returnValue(result$);
+        expectObservable(todoListEffects.loadTodo$).toBe('--b', { b: outputAction });
       });
     });
   });

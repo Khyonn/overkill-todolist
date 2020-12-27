@@ -8,17 +8,4 @@ export class TodoListRules {
     }
     return 0;
   }
-
-  static changeTodoToDone(todos: Todo[], doneTodoId: number): Todo[] {
-    const doneTodo = todos.find((todo) => !Todo.isDone(todo) && todo.id === doneTodoId);
-
-    if (doneTodo) {
-      const newTodo: Todo = { ...doneTodo, state: TodoState.DONE };
-      const newTodos = [...todos, newTodo];
-
-      newTodos.splice(todos.indexOf(doneTodo), 1);
-      return newTodos;
-    }
-    return todos;
-  }
 }

@@ -2,30 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { Todo } from '@shared/business-domain/model/Todo';
 import { TodoState } from '@shared/business-domain/model/TodoState';
-import { TodolistResolver } from '@todos/resolvers/todolist.resolver';
-import { todosFeatureKey, State } from '@todos/store';
+import { TodoResolver } from '@todos/resolvers/todo.resolver';
+import { State } from '@shared/store/root-state';
+import { ActivatedRouteSnapshot } from '@angular/router';
 
-interface FeatureState {
-  [todosFeatureKey]: State;
-}
-describe('TodolistResolver', () => {
-  let resolver: TodolistResolver;
-  let store: MockStore<FeatureState>;
+describe('TodoResolver', () => {
+  let resolver: TodoResolver;
+  let store: MockStore<State>;
 
   beforeEach(() => {
-    const initialState: FeatureState = {
+    const initialState: State = {
       todosFeature: {
         todoList: {
           ids: [],
           entities: {},
         },
       },
+      router: null,
     };
 
     TestBed.configureTestingModule({
-      providers: [TodolistResolver, provideMockStore({ initialState })],
+      providers: [TodoResolver, provideMockStore({ initialState })],
     });
-    resolver = TestBed.inject(TodolistResolver);
+    resolver = TestBed.inject(TodoResolver);
     store = TestBed.inject(MockStore);
   });
 
@@ -44,8 +43,21 @@ describe('TodolistResolver', () => {
             },
           },
         },
+        router: {
+          state: {
+            root: {
+              firstChild: {
+                params: { todoId: '5' },
+              },
+            },
+            url: '/5',
+          },
+          navigationId: 1,
+        },
       });
-      resolver.resolve().subscribe((value) => {
+
+      const routeSnapshot = ({ params: { todoId: '5' } } as unknown) as ActivatedRouteSnapshot;
+      resolver.resolve(routeSnapshot).subscribe((value) => {
         expect(value).toBeTrue();
       });
     });

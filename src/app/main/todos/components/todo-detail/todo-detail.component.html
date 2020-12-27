@@ -1,0 +1,6 @@
+<mat-card *ngIf="todo">
+  <mat-card-title>Todo #{{ todo.id }} : {{ todo.title }} ({{ todo.state }})</mat-card-title>
+  <mat-card-content>
+    {{ todo.description }}
+  </mat-card-content>
+</mat-card>

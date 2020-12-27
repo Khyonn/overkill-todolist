@@ -1,5 +1,6 @@
 import { TodoState } from '../TodoState';
-import { Todo } from './index';
+import { DescribedTodo } from './DescribedTodo';
+import { Todo } from './Todo';
 
 describe('Test class Todo', () => {
   it('Should have empty title and his state should be "TODO"', () => {
@@ -45,5 +46,11 @@ describe('Test class Todo', () => {
     it('should be done', () => {
       expect(Todo.isDone(new Todo('Washing dishes', TodoState.DONE))).toBeTrue();
     });
+  });
+});
+
+describe('Test class DescribedTodo', () => {
+  it('should create', () => {
+    expect(new DescribedTodo().state).toBe(new Todo().state);
   });
 });

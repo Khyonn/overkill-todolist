@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
 import { Todo } from '@shared/business-domain/model/Todo';
-import { TodoListRules } from '@shared/business-domain/TodoListRules';
 import {
   startLoadingList,
   listDataLoaded,
@@ -9,24 +8,37 @@ import {
   todoStateUpdated,
   todoStateUpdateFailed,
 } from './actions';
+import { State, initialState, featureAdapter } from './state';
 
-export type State = Todo[];
-
-const initialState: State = [];
-
-const doNotEditState = (state: State) => state;
+const setIsLoading = (state: State): State => ({ ...state, isLoading: true });
+const setError = (state: State, { error }: { error: string }): State => ({ ...state, error });
+const setNoLoadingOrError = (state: State): State => ({ ...state, isLoading: false, error: null });
 
 export const todoListReducer = createReducer(
   initialState,
-  on(startLoadingList, doNotEditState),
-  on(listDataLoaded, (state, { todos }) => [...todos].sort(TodoListRules.todoListSorter)),
-  on(listLoadingFailed, doNotEditState),
-  on(startUpdateTodoState, doNotEditState),
+  on(startLoadingList, setIsLoading),
+  on(listDataLoaded, (state, { todos }) => featureAdapter.addMany(todos, setNoLoadingOrError(state))),
+  on(listLoadingFailed, setError),
+  on(startUpdateTodoState, setIsLoading),
   on(todoStateUpdated, (state, { updatedTodo }) => {
+    state = setNoLoadingOrError(state);
     if (Todo.isDone(updatedTodo)) {
-      return TodoListRules.changeTodoToDone(state, updatedTodo.id);
+      return {
+        ...state,
+        ids: [...(state.ids as number[]).filter((id) => id !== updatedTodo.id), updatedTodo.id],
+        entities: {
+          ...state.entities,
+          [updatedTodo.id]: updatedTodo,
+        },
+      };
     }
-    return state.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo));
+    return {
+      ...state,
+      entities: {
+        ...state.entities,
+        [updatedTodo.id]: updatedTodo,
+      },
+    };
   }),
-  on(todoStateUpdateFailed, doNotEditState)
+  on(todoStateUpdateFailed, setError)
 );
